@@ -1,12 +1,12 @@
-defmodule PhoenixLiveMeta do
+defmodule MetaHeexComponent do
   @moduledoc """
-  PhoenixLiveMeta provides dynamic meta tag management for Phoenix applications.
+  MetaHeexComponent provides dynamic meta tag management for Phoenix applications.
 
   ## Usage in LiveView
 
       def mount(_params, _session, socket) do
         {:ok,
-         PhoenixLiveMeta.assign_meta(socket,
+         MetaHeexComponent.assign_meta(socket,
            page_title: "Dashboard",
            meta_description: "Your dashboard overview"
          )}
@@ -16,7 +16,7 @@ defmodule PhoenixLiveMeta do
 
       def index(conn, _params) do
         conn
-        |> PhoenixLiveMeta.put_meta(
+        |> MetaHeexComponent.put_meta(
           meta_description: "Welcome to our homepage",
           og_title: "Homepage"
         )
@@ -24,8 +24,8 @@ defmodule PhoenixLiveMeta do
       end
   """
 
+  alias MetaHeexComponent.Components.MetaTags
   alias Phoenix.LiveView.Socket
-  alias PhoenixLiveMeta.Components.MetaTags
 
   @doc """
   Renders meta tags component.

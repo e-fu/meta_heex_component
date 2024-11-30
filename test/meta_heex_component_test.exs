@@ -1,10 +1,10 @@
-defmodule PhoenixLiveMetaTest do
+defmodule MetaHeexComponentTest do
   use ExUnit.Case, async: true
 
   import Phoenix.LiveViewTest
 
   setup do
-    Application.put_env(:phoenix_live_meta, :defaults, %{
+    Application.put_env(:meta_heex_component, :defaults, %{
       og_type: "website",
       twitter_card: "summary_large_image",
       locale: "en",
@@ -12,7 +12,7 @@ defmodule PhoenixLiveMetaTest do
     })
 
     on_exit(fn ->
-      Application.delete_env(:phoenix_live_meta, :defaults)
+      Application.delete_env(:meta_heex_component, :defaults)
     end)
 
     :ok
@@ -28,7 +28,7 @@ defmodule PhoenixLiveMetaTest do
         og_title: "Test OG Title"
       ]
 
-      socket = PhoenixLiveMeta.assign_meta(socket, meta_attrs)
+      socket = MetaHeexComponent.assign_meta(socket, meta_attrs)
 
       assert socket.assigns.page_title == "Test Title"
       assert socket.assigns.meta_description == "Test Description"
@@ -46,7 +46,7 @@ defmodule PhoenixLiveMetaTest do
         og_title: "Test OG Title"
       ]
 
-      conn = PhoenixLiveMeta.put_meta(conn, meta_attrs)
+      conn = MetaHeexComponent.put_meta(conn, meta_attrs)
 
       assert conn.assigns.page_title == "Test Title"
       assert conn.assigns.meta_description == "Test Description"
@@ -56,7 +56,7 @@ defmodule PhoenixLiveMetaTest do
 
   test "live_meta_tags/1 renders meta tags" do
     rendered_html =
-      render_component(&PhoenixLiveMeta.live_meta_tags/1, %{
+      render_component(&MetaHeexComponent.live_meta_tags/1, %{
         meta_description: "Test Description",
         meta_keywords: "test,keywords",
         author: "Test Author",

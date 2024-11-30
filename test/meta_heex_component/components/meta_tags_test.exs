@@ -1,13 +1,13 @@
-defmodule PhoenixLiveMeta.Components.MetaTagsTest do
+defmodule MetaHeexComponent.Components.MetaTagsTest do
   use ExUnit.Case, async: true
 
   import Phoenix.LiveViewTest
 
-  alias PhoenixLiveMeta.Components.MetaTags
+  alias MetaHeexComponent.Components.MetaTags
 
   setup do
     # Set up test defaults
-    Application.put_env(:phoenix_live_meta, :defaults, %{
+    Application.put_env(:meta_heex_component, :defaults, %{
       og_type: "website",
       twitter_card: "summary_large_image",
       locale: "en",
@@ -15,7 +15,7 @@ defmodule PhoenixLiveMeta.Components.MetaTagsTest do
     })
 
     on_exit(fn ->
-      Application.delete_env(:phoenix_live_meta, :defaults)
+      Application.delete_env(:meta_heex_component, :defaults)
     end)
 
     :ok

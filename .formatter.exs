@@ -1,7 +1,7 @@
 # Used by "mix format"
 [
   plugins: [
-    Styler
+    # Styler
   ],
   inputs: ["*.{heex,ex,exs}", "{config,lib,test}/**/*.{heex,ex,exs}"],
   locals_without_parens: [

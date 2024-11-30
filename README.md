@@ -1,4 +1,4 @@
-# PhoenixLiveMeta
+# MetaHeexComponent
 
 Meta tags management for Phoenix applications.
 
@@ -12,13 +12,13 @@ Meta tags management for Phoenix applications.
 
 ## Installation
 
-Add `phoenix_live_meta` to your list of dependencies in `mix.exs`:
+Add `meta_heex_component` to your list of dependencies in `mix.exs`:
 
 
 ```elixir
 def deps do
   [
-    {:phoenix_live_meta, "~> 0.1.0"}
+    {:meta_heex_component, "~> 0.1.0"}
   ]
 end
 ```
@@ -28,7 +28,7 @@ Configuration
 Configure default meta tags in your config files:
 
 # config/config.exs
-config :phoenix_live_meta,
+config :meta_heex_component,
   defaults: %{
     og_type: "website",
     twitter_card: "summary_large_image",
@@ -42,7 +42,7 @@ config :phoenix_live_meta,
 ```elixir
 def index(conn, _params) do
   conn
-  |> PhoenixLiveMeta.put_meta(
+  |> MetaHeexComponent.put_meta(
       meta_description: "Welcome to our homepage",
       og_title: "Homepage"
   )
@@ -54,7 +54,7 @@ end
 ```elixir
 def mount(_params, _session, socket) do
   {:ok,
-   PhoenixLiveMeta.assign_meta(socket,
+   MetaHeexComponent.assign_meta(socket,
      page_title: "Dashboard",
      meta_description: "Your dashboard overview",
      og_title: "User Dashboard",
@@ -122,7 +122,7 @@ Include the meta tags in your layout, for example:
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <PhoenixLiveMeta.live_meta_tags
+  <MetaHeexComponent.live_meta_tags
     meta_description={assigns[:meta_description] || "Fallback"}
     meta_keywords={assigns[:meta_keywords] || "default, keywords"}
     author={assigns[:author] || "Default Author"}
@@ -146,7 +146,7 @@ defmodule YourAppWeb do
   def html_helpers do
     ... other entries
     quote do
-      import PhoenixLiveMeta
+      import MetaHeexComponent
     end
   end
 end

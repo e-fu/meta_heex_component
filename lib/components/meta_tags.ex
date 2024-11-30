@@ -1,4 +1,4 @@
-defmodule PhoenixLiveMeta.Components.MetaTags do
+defmodule MetaHeexComponent.Components.MetaTags do
   @moduledoc """
   Provides components for rendering meta tags in Phoenix applications.
   """
@@ -19,16 +19,26 @@ defmodule PhoenixLiveMeta.Components.MetaTags do
   attr :og_title, :string, required: false, doc: "Open Graph title"
 
   # Open Graph Attributes
-  attr :og_description, :string, required: false, doc: "Open Graph description, falls back to meta_description"
+  attr :og_description, :string,
+    required: false,
+    doc: "Open Graph description, falls back to meta_description"
+
   attr :og_type, :string, required: false, doc: "Open Graph type (e.g., 'website', 'article')"
   attr :og_image, :string, required: false, doc: "Open Graph image URL"
   attr :og_url, :string, required: false, doc: "Open Graph URL"
 
   # Twitter Card Attributes
-  attr :twitter_card, :string, required: false, doc: "Twitter card type (e.g., 'summary_large_image', 'summary')"
+  attr :twitter_card, :string,
+    required: false,
+    doc: "Twitter card type (e.g., 'summary_large_image', 'summary')"
+
   attr :twitter_site, :string, required: false, doc: "Twitter @username for the website"
   attr :twitter_title, :string, required: false, doc: "Twitter title, falls back to og_title"
-  attr :twitter_description, :string, required: false, doc: "Twitter description, falls back to og_description"
+
+  attr :twitter_description, :string,
+    required: false,
+    doc: "Twitter description, falls back to og_description"
+
   attr :twitter_image, :string, required: false, doc: "Twitter image URL"
 
   # Additional Attributes
@@ -44,8 +54,13 @@ defmodule PhoenixLiveMeta.Components.MetaTags do
     - "width=device-width, initial-scale=1, maximum-scale=1"
     """
 
-  attr :robots, :string, required: false, doc: "Robots meta tag content (e.g., 'index,follow', 'noindex,nofollow')"
-  attr :additional_meta_tags, :list, default: [], doc: "List of additional meta tags to be rendered"
+  attr :robots, :string,
+    required: false,
+    doc: "Robots meta tag content (e.g., 'index,follow', 'noindex,nofollow')"
+
+  attr :additional_meta_tags, :list,
+    default: [],
+    doc: "List of additional meta tags to be rendered"
 
   def live_meta_tags(assigns) do
     assigns = prepare_assigns(assigns)
@@ -130,12 +145,13 @@ defmodule PhoenixLiveMeta.Components.MetaTags do
 
   defp prepare_assigns(assigns) when is_map(assigns) do
     assigns
-    |> Map.merge(PhoenixLiveMeta.Config.get_defaults())
+    |> Map.merge(MetaHeexComponent.Config.get_defaults())
     |> maybe_prepare_og_tags()
     |> maybe_prepare_twitter_tags()
   end
 
-  defp maybe_prepare_og_tags(%{meta_description: description} = assigns) when not is_nil(description) do
+  defp maybe_prepare_og_tags(%{meta_description: description} = assigns)
+       when not is_nil(description) do
     Map.merge(assigns, %{
       og_description: assigns[:og_description] || description,
       og_title: assigns[:og_title] || description

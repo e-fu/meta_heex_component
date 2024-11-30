@@ -26,7 +26,6 @@ defmodule PhoenixLiveMeta.MixProject do
   defp deps do
     [
       {:phoenix_live_view, "~> 0.20.0"},
-      # {:phoenix_html, "~> 4.1.1"},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false},
       {:styler, "~> 1.2", only: [:dev, :test], runtime: false}
     ]

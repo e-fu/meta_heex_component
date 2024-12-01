@@ -24,9 +24,10 @@ end
 ```
 
 
-Configuration
+# Configuration
 Configure default meta tags in your config files:
 
+```elixir
 # config/config.exs
 config :meta_heex_component,
   defaults: %{
@@ -36,6 +37,7 @@ config :meta_heex_component,
     robots: "index,follow",
     viewport: "width=device-width, initial-scale=1"
   }
+```
 
 ## Examle usage in a Controller:
 
@@ -72,39 +74,49 @@ All attributes are optional and will use configured defaults (config.exs) when n
 
 
 ### SEO Attributes
+```elixir
 meta_description - Primary meta description for SEO
 meta_keywords - Keywords for SEO
 author - Content author
 robots - Robots meta tag content (like "index,follow")
+```
+
 
 ### Open Graph Attributes
+```elixir
 og_title - Open Graph title
 og_description - Falls back to meta_description if not provided
 og_type - Type (e.g., 'website', 'article')
 og_image - Image URL
 og_url - URL
+```
+
 
 ### Twitter Card Attributes
+```elixir
 twitter_card - Card type (e.g., 'summary_large_image')
 twitter_site - @username for the website
 twitter_title - Falls back to og_title if not provided
 twitter_description - Falls back to og_description if not provided
 twitter_image - Image URL
+```
 
 ### Additional Attributes
+```elixir
 canonical_url - Canonical URL
 locale - Content language (e.g., 'en', 'es')
 viewport - Viewport settings
 additional_meta_tags - List of additional meta tags
-
+```
 ### Default Fallbacks
 The component implements smart fallbacks:
 
+```elixir
 og_description falls back to meta_description
 og_title falls back to meta_description
 twitter_title falls back to og_title
 twitter_description falls back to og_description
-
+```
 ### Additional Meta Tags
 custom additional_meta_tags (list) - List of additional meta tags in the format:
 
@@ -152,9 +164,7 @@ defmodule YourAppWeb do
 end
 ```
 
-
-
-License
+# License
 MIT
 
 

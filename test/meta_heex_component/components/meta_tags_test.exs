@@ -167,4 +167,24 @@ defmodule MetaHeexComponent.Components.MetaTagsTest do
       assert html =~ ~s{<meta property="og:type" content="article"}
     end
   end
+
+  describe "additional_meta_tags" do
+    test "combines additional_meta_tags from assigns and meta_tags" do
+      assigns = %{
+        additional_meta_tags: [
+          %{name: "robots", content: "noindex"}
+        ],
+        meta_tags: %{
+          additional_meta_tags: [
+            %{property: "og:locale", content: "en_US"}
+          ]
+        }
+      }
+
+      html = render_component(&MetaTags.live_meta_tags/1, assigns)
+
+      assert html =~ ~s{<meta name="robots" content="noindex"}
+      assert html =~ ~s{<meta property="og:locale" content="en_US"}
+    end
+  end
 end

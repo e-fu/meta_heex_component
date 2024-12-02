@@ -1,7 +1,7 @@
 defmodule MetaHeexComponentTest do
   use ExUnit.Case, async: true
-  use Phoenix.ConnTest
 
+  import Phoenix.ConnTest
   import Phoenix.LiveViewTest
 
   @endpoint MyApp.Endpoint

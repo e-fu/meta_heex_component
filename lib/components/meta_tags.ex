@@ -119,32 +119,54 @@ defmodule MetaHeexComponent.Components.MetaTags do
   end
 
   defp prepare_assigns(%_{} = assigns) do
-    # Get meta_tags from assigns
+    # Get meta_tags and additional_meta_tags from assigns
     meta_tags = Map.get(assigns, :meta_tags, %{})
-    struct_assigns = Map.delete(Map.from_struct(assigns), :meta_tags)
+    struct_assigns = Map.from_struct(assigns)
 
-    # Merge in precedence order: defaults <- struct assigns <- meta_tags
+    # Preserve additional_meta_tags from both sources
+    additional_meta_tags =
+      (Map.get(struct_assigns, :additional_meta_tags, []) ++
+         Map.get(meta_tags, :additional_meta_tags, []))
+      |> Enum.uniq()
+
+    # Remove meta_tags and additional_meta_tags from struct_assigns
+    struct_assigns =
+      struct_assigns
+      |> Map.delete(:meta_tags)
+      |> Map.delete(:additional_meta_tags)
+
+    # Merge in order: defaults <- struct assigns <- meta_tags
     defaults = MetaHeexComponent.Config.get_defaults()
 
-    merged_assigns =
-      defaults
-      |> Map.merge(struct_assigns)
-      |> Map.merge(meta_tags)
-      |> maybe_prepare_og_tags()
-      |> maybe_prepare_twitter_tags()
-
-    merged_assigns
+    defaults
+    |> Map.merge(struct_assigns)
+    |> Map.merge(meta_tags)
+    |> Map.put(:additional_meta_tags, additional_meta_tags)
+    |> maybe_prepare_og_tags()
+    |> maybe_prepare_twitter_tags()
   end
 
   defp prepare_assigns(assigns) when is_map(assigns) do
-    # Extract meta_tags from assigns
+    # Extract meta_tags and additional_meta_tags
     meta_tags = Map.get(assigns, :meta_tags, %{})
-    regular_assigns = Map.delete(assigns, :meta_tags)
 
-    # Merge in precedence order: defaults <- regular assigns <- meta_tags
+    # Preserve additional_meta_tags from both sources
+    additional_meta_tags =
+      (Map.get(assigns, :additional_meta_tags, []) ++
+         Map.get(meta_tags, :additional_meta_tags, []))
+      |> Enum.uniq()
+
+    # Remove meta_tags and additional_meta_tags from assigns
+    regular_assigns =
+      assigns
+      |> Map.delete(:meta_tags)
+      |> Map.delete(:additional_meta_tags)
+
+    # Merge in order: defaults <- regular assigns <- meta_tags
     MetaHeexComponent.Config.get_defaults()
     |> Map.merge(regular_assigns)
     |> Map.merge(meta_tags)
+    |> Map.put(:additional_meta_tags, additional_meta_tags)
     |> maybe_prepare_og_tags()
     |> maybe_prepare_twitter_tags()
   end

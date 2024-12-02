@@ -121,19 +121,30 @@ defmodule MetaHeexComponent.Components.MetaTags do
   defp prepare_assigns(%_{} = assigns) do
     # Get meta_tags from assigns
     meta_tags = Map.get(assigns, :meta_tags, %{})
-    struct_assigns = Map.from_struct(assigns)
+    struct_assigns = Map.delete(Map.from_struct(assigns), :meta_tags)
 
     # Merge in precedence order: defaults <- struct assigns <- meta_tags
-    MetaHeexComponent.Config.get_defaults()
-    |> Map.merge(struct_assigns)
-    |> Map.merge(meta_tags)
-    |> maybe_prepare_og_tags()
-    |> maybe_prepare_twitter_tags()
+    defaults = MetaHeexComponent.Config.get_defaults()
+
+    merged_assigns =
+      defaults
+      |> Map.merge(struct_assigns)
+      |> Map.merge(meta_tags)
+      |> maybe_prepare_og_tags()
+      |> maybe_prepare_twitter_tags()
+
+    merged_assigns
   end
 
   defp prepare_assigns(assigns) when is_map(assigns) do
+    # Extract meta_tags from assigns
+    meta_tags = Map.get(assigns, :meta_tags, %{})
+    regular_assigns = Map.delete(assigns, :meta_tags)
+
+    # Merge in precedence order: defaults <- regular assigns <- meta_tags
     MetaHeexComponent.Config.get_defaults()
-    |> Map.merge(assigns)
+    |> Map.merge(regular_assigns)
+    |> Map.merge(meta_tags)
     |> maybe_prepare_og_tags()
     |> maybe_prepare_twitter_tags()
   end

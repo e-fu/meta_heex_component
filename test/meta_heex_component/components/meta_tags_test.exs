@@ -151,23 +151,17 @@ defmodule MetaHeexComponent.Components.MetaTagsTest do
     end
 
     test "meta_tags assigns take precedence over struct assigns" do
-      socket = %Phoenix.LiveView.Socket{}
-
-      # First set some values directly
-      socket =
-        Phoenix.Component.assign(socket,
-          meta_description: "Original",
-          og_type: "website"
-        )
-
-      # Then override with meta_tags
-      socket =
-        Phoenix.Component.assign(socket, :meta_tags, %{
+      # Create assigns map instead of socket
+      assigns = %{
+        meta_description: "Original",
+        og_type: "website",
+        meta_tags: %{
           meta_description: "Override",
           og_type: "article"
-        })
+        }
+      }
 
-      html = render_component(&MetaTags.live_meta_tags/1, socket)
+      html = render_component(&MetaTags.live_meta_tags/1, assigns)
 
       assert html =~ ~s{<meta name="description" content="Override"}
       assert html =~ ~s{<meta property="og:type" content="article"}

@@ -74,10 +74,12 @@ defmodule MetaHeexComponentTest do
         og_title: "Test OG Title"
       ]
 
+      # Use get_meta_tags to merge defaults and meta_tags
+      assigns = %{meta_tags: Map.new(meta_attrs)}
+      merged_assigns = MetaHeexComponent.get_meta_tags(assigns)
+
       html =
-        render_component(&MetaHeexComponent.Components.MetaTags.live_meta_tags/1, %{
-          meta_tags: Map.new(meta_attrs)
-        })
+        render_component(&MetaHeexComponent.Components.MetaTags.live_meta_tags/1, merged_assigns)
 
       assert html =~ ~s{<meta name="description" content="Test Description"}
       assert html =~ ~s{<meta property="og:title" content="Test OG Title"}

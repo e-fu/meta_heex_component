@@ -1,12 +1,14 @@
 defmodule MetaHeexComponentTest do
   use ExUnit.Case, async: true
+  use Phoenix.ConnTest
 
   import Phoenix.LiveViewTest
 
+  @endpoint MyApp.Endpoint
+
   setup do
+    # Set up test defaults
     Application.put_env(:meta_heex_component, :defaults, %{
-      og_type: "website",
-      twitter_card: "summary_large_image",
       locale: "en",
       robots: "index,follow"
     })
@@ -38,19 +40,47 @@ defmodule MetaHeexComponentTest do
 
   describe "put_meta/2" do
     test "assigns meta values to conn" do
-      conn = %Plug.Conn{}
+      conn = build_conn()
 
       meta_attrs = [
-        page_title: "Test Title",
         meta_description: "Test Description",
         og_title: "Test OG Title"
       ]
 
       conn = MetaHeexComponent.put_meta(conn, meta_attrs)
 
-      assert conn.assigns.page_title == "Test Title"
+      # Check individual assigns
       assert conn.assigns.meta_description == "Test Description"
       assert conn.assigns.og_title == "Test OG Title"
+
+      # Check meta_tags map
+      assert conn.assigns.meta_tags.meta_description == "Test Description"
+      assert conn.assigns.meta_tags.og_title == "Test OG Title"
+    end
+
+    test "merges with existing meta_tags" do
+      conn =
+        build_conn()
+        |> MetaHeexComponent.put_meta(meta_description: "First")
+        |> MetaHeexComponent.put_meta(og_title: "Second")
+
+      assert conn.assigns.meta_tags.meta_description == "First"
+      assert conn.assigns.meta_tags.og_title == "Second"
+    end
+
+    test "meta tags from controller show up in rendered output" do
+      meta_attrs = [
+        meta_description: "Test Description",
+        og_title: "Test OG Title"
+      ]
+
+      html =
+        render_component(&MetaHeexComponent.Components.MetaTags.live_meta_tags/1, %{
+          meta_tags: Map.new(meta_attrs)
+        })
+
+      assert html =~ ~s{<meta name="description" content="Test Description"}
+      assert html =~ ~s{<meta property="og:title" content="Test OG Title"}
     end
   end
 

@@ -100,6 +100,19 @@ defmodule MetaHeexComponent.Components.MetaTagsTest do
 
       assert html =~ ~s{<meta name="twitter:title" content="Test OG Title"}
     end
+
+    test "explicitly provided values are not overwritten by fallbacks" do
+      attrs =
+        Map.merge(@required_attrs, %{
+          og_description: "Explicit OG Description",
+          twitter_title: "Explicit Twitter Title"
+        })
+
+      html = render_component(&MetaTags.live_meta_tags/1, attrs)
+
+      assert html =~ ~s{<meta property="og:description" content="Explicit OG Description"}
+      assert html =~ ~s{<meta name="twitter:title" content="Explicit Twitter Title"}
+    end
   end
 
   describe "assign_meta/2" do
@@ -115,6 +128,49 @@ defmodule MetaHeexComponent.Components.MetaTagsTest do
 
       assert socket.assigns.page_title == "Test Title"
       assert socket.assigns.meta_description == "Test Description"
+    end
+  end
+
+  describe "meta tag merging behavior" do
+    test "merges default config with explicit values" do
+      attrs = %{
+        meta_description: "Override Description",
+        # This should override the default "website"
+        og_type: "article"
+      }
+
+      html = render_component(&MetaTags.live_meta_tags/1, attrs)
+
+      # Check that explicit values are used
+      assert html =~ ~s{<meta name="description" content="Override Description"}
+      assert html =~ ~s{<meta property="og:type" content="article"}
+
+      # Check that defaults are still present
+      assert html =~ ~s{<meta name="language" content="en"}
+      assert html =~ ~s{<meta name="robots" content="index,follow"}
+    end
+
+    test "meta_tags assigns take precedence over struct assigns" do
+      socket = %Phoenix.LiveView.Socket{}
+
+      # First set some values directly
+      socket =
+        Phoenix.Component.assign(socket,
+          meta_description: "Original",
+          og_type: "website"
+        )
+
+      # Then override with meta_tags
+      socket =
+        Phoenix.Component.assign(socket, :meta_tags, %{
+          meta_description: "Override",
+          og_type: "article"
+        })
+
+      html = render_component(&MetaTags.live_meta_tags/1, socket)
+
+      assert html =~ ~s{<meta name="description" content="Override"}
+      assert html =~ ~s{<meta property="og:type" content="article"}
     end
   end
 end

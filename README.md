@@ -39,7 +39,7 @@ config :meta_heex_component,
   }
 ```
 
-## Examle usage in a Controller:
+## Example usage in a Controller:
 
 ```elixir
 def index(conn, _params) do

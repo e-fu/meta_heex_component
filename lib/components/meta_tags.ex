@@ -67,63 +67,40 @@ defmodule MetaHeexComponent.Components.MetaTags do
 
     ~H"""
     <!-- Primary Meta Tags -->
-    <meta charset="utf-8"/>
-    <%= if Map.get(assigns, :viewport) do %>
-      <meta name="viewport" content={@viewport}/>
-    <% end %>
-    <%= if Map.get(assigns, :meta_description) do %>
-      <meta name="description" content={@meta_description} />
-    <% end %>
-    <%= if Map.get(assigns, :meta_keywords) do %>
-      <meta name="keywords" content={@meta_keywords} />
-    <% end %>
-    <%= if Map.get(assigns, :author) do %>
-      <meta name="author" content={@author} />
-    <% end %>
-    <%= if Map.get(assigns, :locale) do %>
-      <meta name="language" content={@locale} />
-    <% end %>
-    <%= if Map.get(assigns, :robots) do %>
-      <meta name="robots" content={@robots} />
-    <% end %>
+    <meta :if={assigns[:viewport]} name="viewport" content={assigns[:viewport]} />
+
+    <meta :if={assigns[:meta_description]} name="description" content={assigns[:meta_description]} />
+    <meta :if={assigns[:meta_keywords]} name="keywords" content={assigns[:meta_keywords]} />
+    <meta :if={assigns[:author]} name="author" content={assigns[:author]} />
+    <meta :if={assigns[:locale]} name="language" content={assigns[:locale]} />
+    <meta :if={assigns[:robots]} name="robots" content={assigns[:robots]} />
+    <meta :if={assigns[:application_name]} name="application-name" content={assigns[:application_name]} />
 
     <!-- Open Graph / Facebook -->
-    <%= if Map.get(assigns, :og_type) do %>
-      <meta property="og:type" content={@og_type} />
-    <% end %>
-    <%= if Map.get(assigns, :og_title) do %>
-      <meta property="og:title" content={@og_title} />
-    <% end %>
-    <%= if Map.get(assigns, :og_description) do %>
-      <meta property="og:description" content={@og_description} />
-    <% end %>
-    <%= if Map.get(assigns, :og_image) do %>
-      <meta property="og:image" content={@og_image} />
-    <% end %>
-    <%= if Map.get(assigns, :og_url) do %>
-      <meta property="og:url" content={@og_url} />
-    <% end %>
+    <meta :if={assigns[:og_type]} property="og:type" content={assigns[:og_type]} />
+    <meta :if={assigns[:og_title]} property="og:title" content={assigns[:og_title]} />
+    <meta :if={assigns[:og_description]} property="og:description" content={assigns[:og_description]} />
+    <meta :if={assigns[:og_image]} property="og:image" content={assigns[:og_image]} />
+    <meta :if={assigns[:og_url]} property="og:url" content={assigns[:og_url]} />
+    <meta :if={assigns[:og_site_name]} property="og:site_name" content={assigns[:og_site_name]} />
+    <meta :if={assigns[:og_locale]} property="og:locale" content={assigns[:og_locale]} />
 
     <!-- Twitter -->
-    <%= if Map.get(assigns, :twitter_card) do %>
-      <meta name="twitter:card" content={@twitter_card} />
-    <% end %>
-    <%= if Map.get(assigns, :twitter_site) do %>
-      <meta name="twitter:site" content={@twitter_site} />
-    <% end %>
-    <%= if Map.get(assigns, :twitter_title) do %>
-      <meta name="twitter:title" content={@twitter_title} />
-    <% end %>
-    <%= if Map.get(assigns, :twitter_description) do %>
-      <meta name="twitter:description" content={@twitter_description} />
-    <% end %>
-    <%= if Map.get(assigns, :twitter_image) do %>
-      <meta name="twitter:image" content={@twitter_image} />
-    <% end %>
+    <meta :if={assigns[:twitter_card]} name="twitter:card" content={assigns[:twitter_card]} />
+    <meta :if={assigns[:twitter_site]} name="twitter:site" content={assigns[:twitter_site]} />
+    <meta :if={assigns[:twitter_title]} name="twitter:title" content={assigns[:twitter_title]} />
+    <meta :if={assigns[:twitter_description]} name="twitter:description" content={assigns[:twitter_description]} />
+    <meta :if={assigns[:twitter_image]} name="twitter:image" content={assigns[:twitter_image]} />
+    <meta :if={assigns[:twitter_image_alt]} name="twitter:image:alt" content={assigns[:twitter_image_alt]} />
 
-    <%= if Map.get(assigns, :canonical_url) do %>
-      <link rel="canonical" href={@canonical_url} />
-    <% end %>
+    <!-- Accessibility / Misc -->
+    <meta :if={assigns[:theme_color]} name="theme-color" content={assigns[:theme_color]} />
+    <meta :if={assigns[:csp]} http-equiv="Content-Security-Policy" content={assigns[:csp]} />
+    <link :if={assigns[:canonical_url]} rel="canonical" href={assigns[:canonical_url]} />
+    <link :if={assigns[:manifest]} rel="manifest" href={assigns[:manifest]} />
+    <link :if={assigns[:apple_touch_icon]} rel="apple-touch-icon" href={assigns[:apple_touch_icon]} />
+    <link :if={assigns[:favicon]} rel="icon" href={assigns[:favicon]} />
+
 
     <%= for meta <- Map.get(assigns, :additional_meta_tags, []) do %>
       <%= render_meta_tag(meta) %>
@@ -141,37 +118,49 @@ defmodule MetaHeexComponent.Components.MetaTags do
     end)
   end
 
-  defp prepare_assigns(%_{} = assigns), do: prepare_assigns(Map.from_struct(assigns))
+  defp prepare_assigns(%_{} = assigns) do
+    # Get meta_tags from assigns
+    meta_tags = Map.get(assigns, :meta_tags, %{})
+    struct_assigns = Map.from_struct(assigns)
 
-  defp prepare_assigns(assigns) when is_map(assigns) do
-    assigns
-    |> Map.merge(MetaHeexComponent.Config.get_defaults())
+    # Merge in precedence order: defaults <- struct assigns <- meta_tags
+    MetaHeexComponent.Config.get_defaults()
+    |> Map.merge(struct_assigns)
+    |> Map.merge(meta_tags)
     |> maybe_prepare_og_tags()
     |> maybe_prepare_twitter_tags()
   end
 
-  defp maybe_prepare_og_tags(%{meta_description: description} = assigns)
-       when not is_nil(description) do
-    Map.merge(assigns, %{
-      og_description: assigns[:og_description] || description,
-      og_title: assigns[:og_title] || description
-    })
+  defp prepare_assigns(assigns) when is_map(assigns) do
+    MetaHeexComponent.Config.get_defaults()
+    |> Map.merge(assigns)
+    |> maybe_prepare_og_tags()
+    |> maybe_prepare_twitter_tags()
   end
 
-  defp maybe_prepare_og_tags(assigns), do: assigns
-
-  defp maybe_prepare_twitter_tags(%{og_title: title, og_description: desc} = assigns)
-       when not is_nil(title) or not is_nil(desc) do
-    Map.merge(assigns, %{
-      twitter_title: assigns[:twitter_title] || title,
-      twitter_description: assigns[:twitter_description] || desc
-    })
+  defp maybe_prepare_og_tags(assigns) do
+    # Ensure og_description and og_title fall back to meta_description if not explicitly provided
+    assigns
+    |> Map.update(:og_description, assigns[:meta_description], fn existing ->
+      existing || assigns[:meta_description]
+    end)
+    |> Map.update(:og_title, assigns[:meta_description], fn existing ->
+      existing || assigns[:meta_description]
+    end)
   end
 
-  defp maybe_prepare_twitter_tags(assigns), do: assigns
+  defp maybe_prepare_twitter_tags(assigns) do
+    # Ensure twitter_title and twitter_description fall back to og_title and og_description if not explicitly provided
+    assigns
+    |> Map.update(:twitter_title, assigns[:og_title], fn existing ->
+      existing || assigns[:og_title]
+    end)
+    |> Map.update(:twitter_description, assigns[:og_description], fn existing ->
+      existing || assigns[:og_description]
+    end)
+  end
 
   defp render_meta_tag(%{name: name, content: content}) do
-    # Use plain HTML since we're in a Phoenix Component
     assigns = %{name: name, content: content}
 
     ~H"""
@@ -180,7 +169,6 @@ defmodule MetaHeexComponent.Components.MetaTags do
   end
 
   defp render_meta_tag(%{property: property, content: content}) do
-    # Use plain HTML since we're in a Phoenix Component
     assigns = %{property: property, content: content}
 
     ~H"""

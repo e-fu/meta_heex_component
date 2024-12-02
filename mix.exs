@@ -1,7 +1,7 @@
 defmodule MetaHeexComponent.MixProject do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.2.0"
   @source_url "https://github.com/e-fu/meta_heex_component.git"
 
   def project do

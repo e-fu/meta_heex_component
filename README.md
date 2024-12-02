@@ -18,11 +18,10 @@ Add `meta_heex_component` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:meta_heex_component, "~> 0.1.0"}
+    {:meta_heex_component, "~> 0.2.0"}
   ]
 end
 ```
-
 
 # Configuration
 Configure default meta tags in your config files:
@@ -32,12 +31,34 @@ Configure default meta tags in your config files:
 config :meta_heex_component,
   defaults: %{
     og_type: "website",
-    twitter_card: "summary_large_image",
     locale: "en",
-    robots: "index,follow",
-    viewport: "width=device-width, initial-scale=1"
   }
 ```
+
+## Example integration in root.html.heex:
+
+Include the meta tags in your layout, for example:
+
+```elixir
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <MetaHeexComponent.live_meta_tags {MetaHeexComponent.get_meta_tags(assigns)} />
+</head>
+```
+
+The get_meta_tags/1 helper function will:
+
+Merge configuration defaults with explicitly set meta tags
+Handle both controller and LiveView meta tags
+Ensure proper precedence (explicit values override defaults)
+Meta Tag Precedence
+Meta tags are merged in the following order (later values override earlier ones):
+
+1. Configuration defaults (from config.exs)
+2. Assigns set directly on the socket/conn
+3. Values in the meta_tags map (set via put_meta/2 or assign_meta/2)
+
 
 ## Example usage in a Controller:
 
@@ -46,7 +67,8 @@ def index(conn, _params) do
   conn
   |> MetaHeexComponent.put_meta(
       meta_description: "Welcome to our homepage",
-      og_title: "Homepage"
+      og_title: "Homepage",
+      locale: "es"  # This will override the default "en"
   )
   |> render("index.html")
 end
@@ -99,6 +121,7 @@ twitter_site - @username for the website
 twitter_title - Falls back to og_title if not provided
 twitter_description - Falls back to og_description if not provided
 twitter_image - Image URL
+twitter_image_alt - Image alt text
 ```
 
 ### Additional Attributes
@@ -106,8 +129,15 @@ twitter_image - Image URL
 canonical_url - Canonical URL
 locale - Content language (e.g., 'en', 'es')
 viewport - Viewport settings
+theme_color - Theme color for browsers
+csp - Content Security Policy
+manifest - Web app manifest path
+apple_touch_icon - Apple touch icon path
+favicon - Favicon path
+application_name - Application name
 additional_meta_tags - List of additional meta tags
 ```
+
 ### Default Fallbacks
 The component implements smart fallbacks:
 
@@ -117,38 +147,17 @@ og_title falls back to meta_description
 twitter_title falls back to og_title
 twitter_description falls back to og_description
 ```
+
 ### Additional Meta Tags
 custom additional_meta_tags (list) - List of additional meta tags in the format:
 
-  ```elixir
-  [
-    %{property: "og:locale", content: "en_US"}
-  ]
-  ```
-
-## Example integration in root.html.heex:
-
-Include the meta tags in your layout, for example:
-
-```elixir
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <MetaHeexComponent.live_meta_tags
-    meta_description={assigns[:meta_description] || "Fallback"}
-    meta_keywords={assigns[:meta_keywords] || "default, keywords"}
-    author={assigns[:author] || "Default Author"}
-    og_title={assigns[:og_title] || "Default OG Title"}
-    og_image={assigns[:og_image] || "default_image.png"}
-    twitter_site="@yourapplication"
-    additional_meta_tags={[
-      # add any others you want
-      %{name: "application-name", content: "Your App"},
-      %{property: "og:locale", content: "en_US"}
-    ]}
-  />
-</head>
+ ```elixir
+additional_meta_tags: [
+  %{name: "robots", content: "noindex"},
+  %{property: "og:locale", content: "en_US"}
+]
 ```
+
 ## Import into html_helper
 
 You can also import the functionality into your html_helper in lib/your_app_web.ex for easier use across your application. Add the following:
@@ -166,6 +175,3 @@ end
 
 # License
 MIT
-
-
-### The End

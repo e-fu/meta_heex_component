@@ -27,8 +27,8 @@ defmodule MetaHeexComponent.MixProject do
   defp deps do
     [
       {:phoenix_live_view, "~> 1.0.0"},
-      {:ex_doc, "~> 0.29", only: :dev, runtime: false},
-      {:styler, "~> 1.2", only: [:dev, :test], runtime: false}
+      {:ex_doc, "~> 0.29", only: :dev, runtime: false}
+      # {:styler, "~> 1.2", only: [:dev, :test], runtime: false}
     ]
   end
 

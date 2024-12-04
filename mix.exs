@@ -1,7 +1,7 @@
 defmodule MetaHeexComponent.MixProject do
   use Mix.Project
 
-  @version "0.2.1"
+  @version "0.2.2"
   @source_url "https://github.com/e-fu/meta_heex_component.git"
 
   def project do
@@ -9,7 +9,7 @@ defmodule MetaHeexComponent.MixProject do
       app: :meta_heex_component,
       version: @version,
       elixir: "~> 1.14",
-      phoenix: "~> 1.7.0",
+      phoenix: "~> 1.7.17",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
@@ -26,9 +26,9 @@ defmodule MetaHeexComponent.MixProject do
 
   defp deps do
     [
-      {:phoenix_live_view, "~> 0.20.0"},
-      {:ex_doc, "~> 0.29", only: :dev, runtime: false}
-      # {:styler, "~> 1.2", only: [:dev, :test], runtime: false}
+      {:phoenix_live_view, "~> 1.0.0"},
+      {:ex_doc, "~> 0.29", only: :dev, runtime: false},
+      {:styler, "~> 1.2", only: [:dev, :test], runtime: false}
     ]
   end
 

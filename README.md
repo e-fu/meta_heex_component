@@ -18,7 +18,8 @@ Add `meta_heex_component` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:meta_heex_component, "~> 0.2.0"}
+    {:meta_heex_component, "~> 0.2.2"}
+    # from 0.2.2 you need liveview 1.0.0 or higher
   ]
 end
 ```

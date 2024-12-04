@@ -162,8 +162,11 @@ defmodule MetaHeexComponent.Components.MetaTags do
       |> Map.delete(:meta_tags)
       |> Map.delete(:additional_meta_tags)
 
+    # Get defaults and ensure they're a map
+    defaults = MetaHeexComponent.Config.get_defaults() || %{}
+
     # Merge in order: defaults <- regular assigns <- meta_tags
-    MetaHeexComponent.Config.get_defaults()
+    defaults
     |> Map.merge(regular_assigns)
     |> Map.merge(meta_tags)
     |> Map.put(:additional_meta_tags, additional_meta_tags)

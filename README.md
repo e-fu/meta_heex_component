@@ -32,6 +32,7 @@ config :meta_heex_component,
   defaults: %{
     og_type: "website",
     locale: "en",
+    # add more if you need
   }
 ```
 
@@ -40,6 +41,7 @@ config :meta_heex_component,
 Include the meta tags in your layout, for example:
 
 ```elixir
+# root.html.heex
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -69,6 +71,7 @@ def index(conn, _params) do
       meta_description: "Welcome to our homepage",
       og_title: "Homepage",
       locale: "es"  # This will override the default "en"
+      # add more if you need
   )
   |> render("index.html")
 end
@@ -79,10 +82,12 @@ end
 def mount(_params, _session, socket) do
   {:ok,
    MetaHeexComponent.assign_meta(socket,
-     page_title: "Dashboard",
-     meta_description: "Your dashboard overview",
-     og_title: "User Dashboard",
+     page_title: "Products",
+     meta_description: "Your product overview",
+     og_title: "Products List",
      twitter_card: "summary",
+     # add more if you need
+     # add additional
      additional_meta_tags: [
        %{name: "robots", content: "index,follow"},
        %{property: "og:locale", content: "en_US"}
